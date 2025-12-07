@@ -24,8 +24,8 @@ public function up(): void
               ->restrictOnDelete();
 
         $table->integer('quantity');
-        $table->decimal('price', 10, 2);      // preço unitário
-        $table->decimal('subtotal', 10, 2);  // quantity * price
+        $table->decimal('price', 10, 2);
+        $table->decimal('subtotal', 10, 2);
 
         $table->timestamps();
     });

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -12,16 +14,9 @@ class ProductController extends Controller
         return Product::paginate(10);
     }
 
-    public function store(Request $request)
+    public function store(CreateProductRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string'|'max:255',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-        ]);
-
-        $product = Product::create($data);
-
+        $product = Product::create($request->validated());
         return response()->json($product, 201);
     }
 
@@ -30,17 +25,10 @@ class ProductController extends Controller
         return $product;
     }
 
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        $data = $request->validate([
-            'name' => 'sometimes|string'|'max:255',
-            'price' => 'sometimes|numeric|min:0',
-            'stock' => 'sometimes|integer|min:0',
-        ]);
-
-        $product->update($data);
-
-        return response()->json($product);
+        $product->update($request->validated());
+        return $product;
     }
 
     public function destroy(Product $product)
@@ -49,5 +37,4 @@ class ProductController extends Controller
 
         return response()->json([], 204);
     }
-
 }

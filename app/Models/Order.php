@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-enum OrderStatus: string {
+enum OrderStatus: string
+{
     case Pending = 'pending';
     case Paid = 'paid';
     case Canceled = 'canceled';

@@ -1,0 +1,12 @@
+{
+    "servers": {
+        "laravel-boost": {
+            "command": "wsl.exe",
+            "args": [
+                "/home/rafael/.config/herd-lite/bin/php",
+                "/home/rafael/laravel-pedidos-api/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}

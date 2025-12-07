@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderCreated;
+use App\Http\Requests\CreateOrderRequest;
+use App\Http\Requests\UpdateOrderRequest;
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\OrderItem;
-use App\Models\Customer;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Events\OrderCreated;
 
 class OrderController extends Controller
 {
@@ -19,14 +20,9 @@ class OrderController extends Controller
             ->paginate(10);
     }
 
-    public function store(Request $request)
+    public function store(CreateOrderRequest $request)
     {
-        $data = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
-        ]);
+        $data = $request->validated();
 
         return DB::transaction(function () use ($data) {
 
@@ -50,11 +46,11 @@ class OrderController extends Controller
                 $subtotal = $product->price * $itemData['quantity'];
 
                 OrderItem::create([
-                    'order_id'   => $order->id,
+                    'order_id' => $order->id,
                     'product_id' => $product->id,
-                    'quantity'   => $itemData['quantity'],
-                    'price'      => $product->price,
-                    'subtotal'   => $subtotal,
+                    'quantity' => $itemData['quantity'],
+                    'price' => $product->price,
+                    'subtotal' => $subtotal,
                 ]);
 
                 $total += $subtotal;
@@ -76,20 +72,16 @@ class OrderController extends Controller
         return $order->load(['customer', 'items.product']);
     }
 
-    public function update(Request $request, Order $order)
+    public function update(UpdateOrderRequest $request, Order $order)
     {
-        $data = $request->validate([
-            'status' => 'required|in:pending,paid,canceled'
-        ]);
-
-        $order->update(['status' => $data['status']]);
-
+        $order->update($request->validated());
         return $order;
     }
 
     public function destroy(Order $order)
     {
         $order->delete();
+
         return response()->json([], 204);
     }
 }
